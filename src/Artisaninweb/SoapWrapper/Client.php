@@ -157,6 +157,24 @@ class Client extends SoapClient
   }
 
   /**
+   * Overrides Do_request to process multipart MIME messages in SOAP Responses
+   *
+   * @param string $request
+   * @param string $location
+   * @param string $action
+   * @param int $version
+   * @param int $one_way
+   * @return string|string[]|null
+   */
+  public function __doRequest($request, $location, $action, $version, $one_way = 0)
+  {
+      $response = parent::__doRequest($request, $location, $action, $version, $one_way);
+      // strip away everything but the xml.
+      $response = preg_replace('#^.*(<\?xml.*>)[^>]*$#s', '$1', $response);
+      return $response;
+  }
+
+  /**
    * Do a soap call on the webservice client
    *
    * @param string $function
